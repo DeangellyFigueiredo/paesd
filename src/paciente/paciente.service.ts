@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreatePacienteDto } from './dto/create-paciente.dto';
 import { PrismaService } from 'src/repository/prisma.service';
 import { UpdatePacienteDto } from './dto/update-paciente.dto';
@@ -23,12 +23,26 @@ export class PacienteService {
   }
 
   async getPacienteById(id: string) {
-    return await this.repository.paciente.findUnique({
+    const paciente = await this.repository.paciente.findUnique({
       where: { id },
     });
+
+    if (!paciente) {
+      return new HttpException('Paciente não encontrado', HttpStatus.NOT_FOUND);
+    }
+
+    return paciente;
   }
 
   async update(id: string, updatePacienteDto: UpdatePacienteDto) {
+    const pacienteExists = await this.repository.paciente.findUnique({
+      where: { id },
+    });
+
+    if (!pacienteExists) {
+      return new HttpException('Paciente não encontrado', HttpStatus.NOT_FOUND);
+    }
+
     return await this.repository.paciente.update({
       where: { id },
       data: updatePacienteDto,
@@ -36,6 +50,14 @@ export class PacienteService {
   }
 
   async remove(id: string) {
+    const pacienteExists = await this.repository.paciente.findUnique({
+      where: { id },
+    });
+
+    if (!pacienteExists) {
+      return new HttpException('Paciente não encontrado', HttpStatus.NOT_FOUND);
+    }
+
     return await this.repository.paciente.delete({
       where: { id },
     });

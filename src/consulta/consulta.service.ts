@@ -35,16 +35,30 @@ export class ConsultaService {
       );
     }
 
-    const consultas = await this.prismaService.consulta.findMany({
+    const consultasMedico = await this.prismaService.consulta.findMany({
       where: {
         medicoId: createConsultaDto.medicoId,
         data: new Date(createConsultaDto.data),
       },
     });
 
-    if (consultas.length > 0) {
+    if (consultasMedico.length > 0) {
       throw new HttpException(
         'Médico já possui consulta marcada para esse horário',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const consultasPaciente = await this.prismaService.consulta.findMany({
+      where: {
+        pacienteId: createConsultaDto.pacienteId,
+        data: new Date(createConsultaDto.data),
+      },
+    });
+
+    if (consultasPaciente.length > 0) {
+      throw new HttpException(
+        'Paciente já possui consulta marcada para esse horário',
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -69,16 +83,30 @@ export class ConsultaService {
   }
 
   async getConsultaById(id: string) {
-    return await this.prismaService.consulta.findUnique({
+    const consulta = await this.prismaService.consulta.findUnique({
       where: { id },
       include: {
         medico: true,
         paciente: true,
       },
     });
+
+    if (!consulta) {
+      throw new HttpException('Consulta não encontrada', HttpStatus.NOT_FOUND);
+    }
+
+    return consulta;
   }
 
   async updateConsulta(id: string, data: UpdateConsultaDto) {
+    const consultaExists = await this.prismaService.consulta.findUnique({
+      where: { id },
+    });
+
+    if (!consultaExists) {
+      throw new HttpException('Consulta não encontrada', HttpStatus.NOT_FOUND);
+    }
+
     return await this.prismaService.consulta.update({
       where: { id },
       data,
@@ -86,6 +114,14 @@ export class ConsultaService {
   }
 
   async deleteConsulta(id: string) {
+    const consultaExists = await this.prismaService.consulta.findUnique({
+      where: { id },
+    });
+
+    if (!consultaExists) {
+      throw new HttpException('Consulta não encontrada', HttpStatus.NOT_FOUND);
+    }
+
     return await this.prismaService.consulta.delete({
       where: { id },
     });
