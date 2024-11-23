@@ -6,9 +6,11 @@ import {
   Param,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { PacienteService } from './paciente.service';
 import { CreatePacienteDto } from './dto/create-paciente.dto';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('paciente')
 export class PacienteController {
@@ -19,7 +21,8 @@ export class PacienteController {
     return this.pacienteService.create(createPacienteDto);
   }
 
-  @Get()
+  @UseGuards(AuthGuard)
+  @Get('/paciente')
   findAll() {
     return this.pacienteService.findAll();
   }
