@@ -27,8 +27,7 @@ export class ConsultaService {
     if (!paciente) {
       throw new HttpException('Paciente não encontrado', HttpStatus.NOT_FOUND);
     }
-
-    if (createConsultaDto.data < new Date()) {
+    if (new Date(createConsultaDto.data) < new Date()) {
       throw new HttpException(
         'Data da consulta inválida',
         HttpStatus.BAD_REQUEST,
@@ -75,9 +74,23 @@ export class ConsultaService {
 
   async getConsultas() {
     return await this.prismaService.consulta.findMany({
-      include: {
-        medico: true,
-        paciente: true,
+      select: {
+        id: true,
+        observacoes: true,
+        data: true,
+        medico: {
+          select: {
+            nome: true,
+            especialidade: true,
+          },
+        },
+        paciente: {
+          select: {
+            nome: true,
+            telefone: true,
+            email: true,
+          },
+        },
       },
     });
   }
