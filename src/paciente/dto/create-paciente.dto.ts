@@ -3,4 +3,5 @@ export interface CreatePacienteDto {
   email: string;
   idade: number;
   telefone: string;
+  senha: string;
 }

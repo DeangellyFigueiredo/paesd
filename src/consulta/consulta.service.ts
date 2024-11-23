@@ -97,7 +97,7 @@ export class ConsultaService {
 
   async getConsultaById(id: string) {
     const consulta = await this.prismaService.consulta.findUnique({
-      where: { id },
+      where: { id: id },
       include: {
         medico: true,
         paciente: true,

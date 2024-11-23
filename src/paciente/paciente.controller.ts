@@ -14,7 +14,7 @@ import { CreatePacienteDto } from './dto/create-paciente.dto';
 export class PacienteController {
   constructor(private readonly pacienteService: PacienteService) {}
 
-  @Post()
+  @Post('')
   create(@Body() createPacienteDto: CreatePacienteDto) {
     return this.pacienteService.create(createPacienteDto);
   }

@@ -16,6 +16,7 @@ model Paciente {
   email    String
   idade    Int
   telefone String
+  senha    String
   Consulta Consulta[]
 }
 

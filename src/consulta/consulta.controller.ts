@@ -1,4 +1,12 @@
-import { Body, Controller, Delete, Get, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { ConsultaService } from './consulta.service';
 import { CreateConsultaDto } from './dto/create-consulta.dto';
 
@@ -17,7 +25,7 @@ export class ConsultaController {
   }
 
   @Get(':id')
-  async getConsultaById(id: string) {
+  async getConsultaById(@Param('id') id: string) {
     return await this.consultaService.getConsultaById(id);
   }
 
