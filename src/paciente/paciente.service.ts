@@ -3,6 +3,7 @@ import { CreatePacienteDto } from './dto/create-paciente.dto';
 import { PrismaService } from 'src/repository/prisma.service';
 import { UpdatePacienteDto } from './dto/update-paciente.dto';
 import { Paciente } from '@prisma/client';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class PacienteService {
@@ -15,7 +16,7 @@ export class PacienteService {
         email: createPacienteDto.email,
         idade: createPacienteDto.idade,
         telefone: createPacienteDto.telefone,
-        senha: createPacienteDto.senha,
+        senha: await bcrypt.hashSync(createPacienteDto.senha, 10),
       },
     });
   }

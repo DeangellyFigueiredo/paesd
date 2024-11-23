@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { LoginDto } from './dto/login.dto';
 import { PacienteService } from 'src/paciente/paciente.service';
 import { JwtService } from '@nestjs/jwt';
-
+import * as bcrypt from 'bcrypt';
 @Injectable()
 export class AuthService {
   constructor(
@@ -23,11 +23,13 @@ export class AuthService {
       );
     }
 
-    if (paciente.senha !== loginDto.senha) {
-      return new HttpException(
-        'Login ou senha inválidos',
-        HttpStatus.BAD_REQUEST,
-      );
+    const passwordEqual = await bcrypt.compareSync(
+      loginDto.senha,
+      paciente.senha,
+    );
+
+    if (!passwordEqual) {
+      return new HttpException('Senha inválida', HttpStatus.BAD_REQUEST);
     }
 
     const payload = {
