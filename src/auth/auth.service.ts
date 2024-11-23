@@ -1,10 +1,14 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { LoginDto } from './dto/login.dto';
 import { PacienteService } from 'src/paciente/paciente.service';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly pacienteService: PacienteService) {}
+  constructor(
+    private readonly pacienteService: PacienteService,
+    private readonly jwtService: JwtService,
+  ) {}
 
   async loginPaciente(loginDto: LoginDto) {
     //pesquisar se o paciente existe
@@ -26,8 +30,16 @@ export class AuthService {
       );
     }
 
+    const payload = {
+      sub: {
+        id: paciente.id,
+        name: paciente.nome,
+        role: 'PACIENTE',
+      },
+    };
+
     return {
-      token: 'TOKEN JWT',
+      token: await this.jwtService.signAsync(payload),
       userId: paciente.id,
       name: paciente.nome,
     };
